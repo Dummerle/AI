@@ -7,11 +7,9 @@ from settings import transformation, batch_size
 
 
 def load_split_test(datadir="Data/"):
-    train_transforms = transformation
-    test_transforms = transformation
 
-    train_data = datasets.ImageFolder(datadir + "train/", transform=train_transforms)
-    test_data = datasets.ImageFolder(datadir + "test/", transform=test_transforms)
+    train_data = datasets.ImageFolder(datadir + "train/", transform=transformation)
+    test_data = datasets.ImageFolder(datadir + "test/", transform=transformation)
 
     num_train = len(train_data)
     num_test = len(test_data)

@@ -8,7 +8,7 @@ from torch import optim
 from torch.autograd import Variable
 from utils import log
 
-trainloader = loadData.load_split_test()
+trainloader, testloader = loadData.load_split_test()
 
 model = Net().to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
@@ -35,15 +35,24 @@ def train(e):
 
 def test():
     model.eval()
+    correct=0
+    len_test=len(testloader)
     files = os.listdir("Data/test/")
-    for data in trainloader:
-        #data = Variable(data).to(device)
-        print(data)
-        break
+    for data, type in testloader:
+        type=Variable(type).to(device)
+        data = Variable(data).to(device)
+        out=model(data)
+
+        if type == out.data.max(1, keepdim=True)[1]:
+            correct+=1
+            print(correct)
+    print(correct/len_test*100+"%")
+        #print(out.data.max(1, keepdim=True)[1])
+
 
 
 if __name__ == '__main__':
-    # train(1)
+    #train(1)
     test()
     for e in range(1, epochs + 1):
         pass
