@@ -1,3 +1,5 @@
+import sys
+
 import torch
 from matplotlib import pyplot
 from torch import nn
@@ -7,8 +9,8 @@ from torchvision import transforms, datasets
 
 from CatDog.ModelClass import ConvNet
 
-BATCH_SIZE = 32
-EPOCHS = 20
+BATCH_SIZE = 16
+EPOCHS = 30
 
 # LRS = [0.001, 0.0005, 0.0003, 0.0001]
 
@@ -21,7 +23,7 @@ train_dataset = datasets.ImageFolder(root="Data/train", transform=transform)
 test_dataset = datasets.ImageFolder(root="Data/test", transform=transform)
 
 train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
-test_loader = DataLoader(test_dataset, batch_size=10, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=16, shuffle=True)
 
 model = ConvNet()
 model = model.to(DEVICE)
@@ -29,7 +31,6 @@ criterion = nn.CrossEntropyLoss()
 # criterion = nn.BCELoss()
 print("TRAINING ON " + torch.cuda.get_device_name() if DEVICE == "cuda" else "CPU")
 optimizer = optim.Adam(model.parameters(), lr=0.001)
-
 
 # Training
 def train():
@@ -46,8 +47,8 @@ def train():
         optimizer.step()
 
         running_loss += loss.item()
-    return round(running_loss / 100, 3)
-
+    return round(running_loss / 100, 5)
+    y
 
 # Validation
 def val():
