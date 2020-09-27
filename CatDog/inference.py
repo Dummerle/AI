@@ -2,7 +2,7 @@ import torch
 from PIL import Image
 from torchvision import transforms
 
-from CatDog.ModelClass import ConvNet
+from ModelClass import ConvNet
 
 model = ConvNet()
 model.load_state_dict(torch.load("Models/maxVal.pth"))

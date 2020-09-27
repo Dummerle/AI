@@ -7,9 +7,9 @@ from torch import optim
 from torch.utils.data import DataLoader
 from torchvision import transforms, datasets
 
-from CatDog.ModelClass import ConvNet
+from ModelClass import ConvNet
 
-BATCH_SIZE = 16
+BATCH_SIZE = 32
 EPOCHS = 30
 
 # LRS = [0.001, 0.0005, 0.0003, 0.0001]
@@ -22,7 +22,7 @@ transform = transforms.Compose([transforms.ToTensor()])
 train_dataset = datasets.ImageFolder(root="Data/train", transform=transform)
 test_dataset = datasets.ImageFolder(root="Data/test", transform=transform)
 
-train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True, num_workers=4)
+train_loader = DataLoader(train_dataset, batch_size=BATCH_SIZE, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=16, shuffle=True)
 
 model = ConvNet()
@@ -36,7 +36,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 def train():
     model.train()
     running_loss = 0.0
-    for i, data in enumerate(train_loader):
+    for data in train_loader:
         inputs, labels = data
         inputs, labels = inputs.to(DEVICE), labels.to(DEVICE)
         optimizer.zero_grad()
@@ -47,8 +47,8 @@ def train():
         optimizer.step()
 
         running_loss += loss.item()
-    return round(running_loss / 100, 5)
-    y
+    return round(running_loss / 100, 3)
+
 
 # Validation
 def val():
