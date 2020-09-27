@@ -1,11 +1,11 @@
 import torch
-from ModelClass import ConvNet
+from CatDog.ModelClass import ConvNet
 from PIL import Image
 from torchvision import transforms
 
 model = ConvNet()
-model.load_state_dict(torch.load("Models/Model.pth"))
-
+model.load_state_dict(torch.load("Models/maxVal.pth"))
+model.eval()
 transform = transforms.Compose([
     transforms.ToTensor()])
 
@@ -16,8 +16,9 @@ def inference(img_path):
     tensor = transform(img)
     tensor = torch.unsqueeze(tensor, 0)
     out = model(tensor)
-    print(torch.max(out.data))
+    #print(out)
     _, predicted = torch.max(out.data, 1)
+
     return "Katze" if predicted.item() == 0 else "Hund", round(torch.max(out.data).item(), 1)
 
 

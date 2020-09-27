@@ -7,10 +7,10 @@ from torchvision import transforms, datasets
 
 from CatDog.ModelClass import ConvNet
 
-BATCH_SIZE = 16
-EPOCHS = 25
+BATCH_SIZE = 32
+EPOCHS = 10
 
-#LRS = [0.001, 0.0005, 0.0003, 0.0001]
+# LRS = [0.001, 0.0005, 0.0003, 0.0001]
 
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
 # DEVICE = "cpu"
@@ -25,8 +25,8 @@ test_loader = DataLoader(test_dataset, batch_size=10, shuffle=True)
 
 model = ConvNet()
 model = model.to(DEVICE)
-#criterion = nn.CrossEntropyLoss()
-criterion = nn.BCELoss()
+criterion = nn.CrossEntropyLoss()
+# criterion = nn.BCELoss()
 print("TRAINING ON " + torch.cuda.get_device_name() if DEVICE == "cuda" else "CPU")
 optimizer = optim.Adam(model.parameters(), lr=0.001)
 
@@ -35,7 +35,7 @@ optimizer = optim.Adam(model.parameters(), lr=0.001)
 def train():
     model.train()
     running_loss = 0.0
-    for i, data in enumerate(train_loader, 0):
+    for i, data in enumerate(train_loader):
         inputs, labels = data
         inputs, labels = inputs.to(DEVICE), labels.to(DEVICE)
         optimizer.zero_grad()
@@ -76,15 +76,18 @@ if __name__ == '__main__':
         losses.append(loss)
         print(f"loss: {loss}")
         valuation = val()
+        if max_val <= valuation:
+            max_val = valuation
+            torch.save(model.state_dict(), "Models/maxVal.pth")
         validations.append(valuation)
         print(f"Validation: {valuation}, MaxVal = {max_val}\n")
-        if max_val < valuation:
-           max_val = valuation
-           torch.save(model.state_dict(), "Models/maxVal.pth")
+
     print("Validation: ", val())
     print(f"TRAINING FINISHED. Validation: {val()}")
-    torch.save(model.state_dict(), "Models/Model.pth")
+    torch.save(model.state_dict(), "Models/EndModel.pth")
     pyplot.plot(losses)
+    pyplot.ylabel("Loss")
+    pyplot.xlabel("Epoch")
     pyplot.show()
     pyplot.plot(validations)
     pyplot.show()
