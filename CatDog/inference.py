@@ -1,7 +1,8 @@
 import torch
-from CatDog.ModelClass import ConvNet
 from PIL import Image
 from torchvision import transforms
+
+from CatDog.ModelClass import ConvNet
 
 model = ConvNet()
 model.load_state_dict(torch.load("Models/maxVal.pth"))
@@ -24,3 +25,4 @@ def inference(img_path):
 print("katze: " + str(inference("Validation/katze.jpg")))
 print("Hund: " + str(inference("Validation/Hund.jpg")))
 print("katze2" + str(inference("Validation/Katze2.jpeg")))
+print("Hund2" + str(inference("Validation/Hund2.jpeg")))
