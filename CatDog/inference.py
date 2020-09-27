@@ -16,7 +16,6 @@ def inference(img_path):
     tensor = transform(img)
     tensor = torch.unsqueeze(tensor, 0)
     out = model(tensor)
-    #print(out)
     _, predicted = torch.max(out.data, 1)
 
     return "Katze" if predicted.item() == 0 else "Hund", round(torch.max(out.data).item(), 1)

@@ -8,7 +8,7 @@ from torchvision import transforms, datasets
 from CatDog.ModelClass import ConvNet
 
 BATCH_SIZE = 32
-EPOCHS = 10
+EPOCHS = 20
 
 # LRS = [0.001, 0.0005, 0.0003, 0.0001]
 
