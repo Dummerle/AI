@@ -1,57 +1,65 @@
-import os
-
-import loadData
-import torch.nn.functional as F
-from Net import Net
-from settings import epochs, device
+import torch
 from torch import optim, nn
-from torch.autograd import Variable
+from torch.utils.data import DataLoader
+from torchvision import transforms, datasets
+
+from Net import Net
+from settings import epochs, device, batch_size
 from utils import log
 
-trainloader, testloader = loadData.load_split_test()
+transform = transforms.Compose([transforms.ToTensor()])
+train_dataset = datasets.ImageFolder(root="Data/train", transform=transform)
+test_dataset = datasets.ImageFolder(root="Data/test", transform=transform)
+
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+test_loader = DataLoader(test_dataset, batch_size=batch_size, shuffle=True)
 
 model = Net().to(device)
 optimizer = optim.Adam(model.parameters(), lr=0.001)
+criterion = nn.CrossEntropyLoss()
 
 
 def train(e):
     model.train()
-    batch_id = 0
-    for data, type in trainloader:
-        data = Variable(data).to(device)
-        type = Variable(type).to(device)
+    running_loss = 0.0
+    for data, label in train_loader:
+        data = data.to(device)
+        label = label.to(device)
         optimizer.zero_grad()
+
         out = model(data)
-        criterion = nn.NLLLoss()
-        loss = criterion(out, type)
+
+        loss = criterion(out, label)
         loss.backward()
         optimizer.step()
 
-
         # log(f"{batch_id}/{len(trainloader)} finished")
         # log(f"Loss: {loss.data}")
-        batch_id += 1
-    log(f"Epoch {e}/{epochs} finished")
+        running_loss += loss.item()
+    log(f"Epoch {e}/{epochs} finished | loss: {round(running_loss, 3)}")
 
 
 def test():
     model.eval()
     correct = 0
-    len_test = len(testloader)
-    files = os.listdir("Data/test/")
-    for data, type in testloader:
-        type = Variable(type).to(device)
-        data = Variable(data).to(device)
+    total = 0
+    for data, type in test_loader:
+        type = type.to(device)
+        data = data.to(device)
         out = model(data)
-
-        if type == out.data.max(1, keepdim=True)[1]:
-            correct += 1
-
-    print(str(correct / len_test * 100) + "%")
+        _, predicted = torch.max(out.data, 1)
+        total += type.size(0)
+        correct += (predicted == type).sum().item()
+    print(str(round(correct / total * 100, 2)) + "%")
+    return round(correct/total, 3)
 
 
 if __name__ == '__main__':
-
+    max_val = 0.0
     for e in range(1, epochs + 1):
         train(e)
-        test()
+        val = test()
+        if val >= max_val:
+            max_val = val
+            torch.save(model.state_dict(), "Models/MaxVal.pth")
+torch.save(model.state_dict(), "Models/EndModel.pth")

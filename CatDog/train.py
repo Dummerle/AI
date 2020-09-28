@@ -69,8 +69,8 @@ def val():
 max_val = 0
 losses = []
 validations = []
-if __name__ == '__main__':
 
+if __name__ == '__main__':
     for e in range(EPOCHS):
         print(f"TRAINING EPOCH {e + 1}/{EPOCHS}", end="  ")
         loss = train()
